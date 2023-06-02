@@ -8,7 +8,6 @@ import ru.job4j.chess.firuges.black.BishopBlack;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@Disabled("Тесты отключены. Удалить аннотацию после реализации всех методов по заданию.")
 public class LogicTest {
 
     @Test
@@ -19,5 +18,32 @@ public class LogicTest {
             logic.move(Cell.C1, Cell.H6);
         });
         assertThat(exception.getMessage()).isEqualTo("Figure not found on the board.");
+    }
+
+    @Test
+    public void whenMoveThenOccupiedCellException()
+            throws FigureNotFoundException, OccupiedCellException, ImpossibleMoveException {
+        BishopBlack bishopBlack = new BishopBlack(Cell.D2);
+        BishopBlack bishopBlackMove = new BishopBlack(Cell.C1);
+        Logic logic = new Logic();
+        logic.add(bishopBlack);
+        logic.add(bishopBlackMove);
+        OccupiedCellException exception = assertThrows(OccupiedCellException.class, () -> {
+            logic.move(Cell.C1, Cell.H6);
+        });
+        assertThat(exception.getMessage()).isNullOrEmpty();
+    }
+
+    @Test
+    public void whenMoveThenImpossibleMoveException()
+            throws FigureNotFoundException, OccupiedCellException, ImpossibleMoveException {
+        BishopBlack bishopBlackMove = new BishopBlack(Cell.C1);
+        Logic logic = new Logic();
+        logic.add(bishopBlackMove);
+        ImpossibleMoveException exception = assertThrows(ImpossibleMoveException.class, () -> {
+            logic.move(Cell.C1, Cell.H5);
+        });
+        assertThat(exception.getMessage()).isEqualTo(
+                String.format("Could not move by diagonal from %s to %s", Cell.C1, Cell.H5));
     }
 }
